@@ -1,0 +1,125 @@
+
+
+
+		 TypeVar----------------------------	TypeNumber--------------------------------
+				[n -> Number] |- n : Number					[n -> Number] |- 1 : Number	
+ TypeArith(Plus)-------------------------------------------------------------------------
+				[n -> Number] |- n + 1 : Number
+TypeFunction---------------------------------------------------------------------------------
+			[] |- (n: const Number) => {  n + 1 } : (n: const Number) => Number
+
+
+
+
+
+
+
+
+		 TypeVar----------------------------	TypeNumber--------------------------------
+				[n -> Number] |- n : Number					[n -> Number] |- 1 : Number	
+ TypeArith(Plus)-------------------------------------------------------------------------
+				[n -> Number] |- n + 1 : Number
+TypeFunctionAnn------------------------------------------------------------------------------
+				[] |- (n: const Number): Number => {  n + 1 } : (n: const Number) => Number
+
+
+
+
+		 TypeVar----------------------------	TypeNumber--------------------------------
+				[n -> Number] |- n : Number					[n -> Number] |- 1 : Number	
+ TypeArith(Plus)-------------------------------------------------------------------------
+				[n -> Number] |- n + 1 : Number
+TypeFunctionAnn------------------------------------------------------------------------------
+				[] |- (n: const Number): String => {  n + 1 } :  ??? ERROR (Number, n+1)
+
+
+
+
+
+TE1=[foo -> (n: const Number) => Number, n -> Number]
+
+
+
+		TypeVar------------------------------------------		------------------
+				TE1 |- foo : (n: const Number) => Number 		TE1 |- n : Number
+		TypCall--------------------------------------------------------------------------
+				TE1|- foo( n ) : Number
+TypeRecFunction-----------------------------------------------------------------------------
+ 		[] |- foo(n: const Number): Number => { foo( n ) } : (n: const Number) => Number 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(n: const Number) => {  n + 1 }
+(n: const Number): Number => {  n + 1 }
+(n: const Number): String => {  n + 1 }
+foo(n: const Number): Number => {  foo( n ) }
+foo(n: const Number): String => {  foo( n ) }
+foo(n: const Number): Number => {  foo( n ) } (2)
+foo(n: const Number): Number => {  foo( n ) + 1}
+foo(n: const Number): String => {  foo( n ) + 1 }
+foo(n: const Number): Number => {  foo( n ) + 1 } (2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+???---------------------------------------------------------------------
+	[] |- foo(n: const Number): Number => {  foo( n – 1 ) } : ???
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+foo(n: const Number): Number => {  foo( n – 1 ) } (2)

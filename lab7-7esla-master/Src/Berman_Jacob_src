@@ -1,0 +1,238 @@
+// L7submition.scala
+
+/*
+
+	Q1.
+
+ */
+// Binary Tree
+// T ::= Nil | T <- A -> T
+// A is a generic language
+sealed abstract class BT[+A] // T
+case object Empty extends BT // Nil
+case class BTNode[A](l:BT[A],d:A,r:BT[A]) extends BT[A] // Tl <- Ad -> Tr
+
+def BTfoldLeft[A,B](t:BT[A])(z:B)(cb:(B,A)=>B):B = t match {
+	case Empty => z
+	case BTNode(l,d,r) => BTfoldLeft(r)(cb(BTfoldLeft(l)(z)(cb),d))(cb)
+}
+def BTfoldRight[A,B](t:BT[A])(z:B)(cb:(A,B)=>B):B = t match {
+	case Empty => z
+	case BTNode(l,d,r) => BTfoldRight(l)(cb(d,BTfoldRight(r)(z)(cb)))(cb)
+}
+def BTmap[A,B](t:BT[A])(cb:A=>B):BT[B] = t match {
+	case Empty => Empty
+	case BTNode(l,d,r) => BTNode(BTmap(l)(cb),cb(d),BTmap(r)(cb))
+}
+
+
+// Binned Tree
+// B ::= Nil | B <- L -> B
+// L ::= Nil | A :: L
+type BinT[A] = BT[List[A]]
+
+def BTLLfoldLeft[A,B](t:BinT[A])(z:B)(cb:(B,A)=>B):B = {
+	def foldLeftList[A,B](l:List[A])(z:B)(cb:(B,A)=>B):B = l match{
+		case Nil => z
+		case h :: t => {
+			val zp = cb(z,h)
+			val zpp = foldLeftList(t)(zp)(cb)
+			zpp
+		}
+	}
+	BTfoldLeft(t)(z){
+		(zp, h) => foldLeftList(h)(zp)(cb)
+	}
+	// def helper(l:List[A])(z:B):B = l match{
+	// 	case Nil => z
+	// 	case List(h,t) => {
+	// 		val zp = cb(z,h)
+	// 		val zpp = helper(l)(zp)
+	// 		zpp
+	// 	}
+	// }
+	// t match{
+	// 	case Empty => z
+	// 	case BTNode(l,d,r) => {
+	// 		val zp = BTLLfoldLeft(l)(z)(cb)
+	// 		val zpp = helper(d)(zp)
+	// 		val zppp = BTLLfoldLeft(r)(zpp)(cb)
+	// 		zppp
+	// 	}
+	// }
+}
+
+def BTLLmap[A,B](t:BinT[A])(cb:A=>B):BinT[B] = t match {
+	case Empty => Empty:BinT[B]
+	case BTNode(l, d, r) => BTNode(BTLLmap(l)(cb), d.map(cb) ,BTLLmap(r)(cb))
+}
+
+def SumBinnedTree(t:BinT[Int]):Int = {
+	BTLLfoldLeft(t)(0){ (z,h) => z + h }
+}
+
+def existsList[A](l:List[A])(cb: (A)=>Boolean): Boolean =  l match{
+	 	case Nil => false
+	 	case (h :: t) => cb(h) || existsList(t)(cb)
+	//l.foldLeft(l)(false){ (acc, h) => acc || cb(h) }
+}
+
+def nonEmptyAndSame[A](l:List[A]):(Option[A],Boolean) = l match {
+	case Nil => (None,false)
+	case (h :: t) => if ( existsList(t){ _ != h }) (None, false) else (Some(h), true)
+	// option TODO
+	// a recommended helper function for isBinnedSearchTree
+}
+
+def isBinnedSearchTree(t:BinT[Int]):Boolean = {
+	val ov = BTfoldLeft(t)(Some(Int.MinValue):Option[Int]){
+		case (None, _) => None
+		case (Some(min),l) => {
+			nonEmptyAndSame(l) match {
+				case (None, _) => None
+				case (Some(d), _) if (d <= min) => None
+				case someMinPrime => Some(min)
+			}
+		}
+	}
+	ov != None
+}
+
+
+/*
+
+	Q2.
+
+ */
+
+def getByPolicy[A](l:List[A])(policy:(A)=>Boolean):List[A] = {
+	l flatMap{ (h => if (policy(h)) List(h) else Nil) }
+	}
+
+def getEvens(l:List[Int]):List[Int] = {
+	l flatMap {
+		h => if (h%2 == 0) { List(h) /* h::Nil */ } else { Nil /* List() */ }
+	}
+}
+
+def getNonNegs(l:List[Int]):List[Int] = {
+	l flatMap {
+		h => if (h > 0) { List(h) /* h::Nil */ } else { Nil /* List() */ }
+	}
+}
+
+def getConsonants(l:List[Char]):List[Char] = {
+	l flatMap {
+		//h => if (h != 'a' || 'e' || 'i' || 'o' || 'u') { List(h) /* h::Nil */ } else { Nil /* List() */ }
+		h => h match {
+			case 'a' => Nil
+			case 'e' => Nil
+			case 'i' => Nil
+			case 'o' => Nil
+			case 'u' => Nil
+			case _ => List(h)
+		}		
+	}
+}
+
+
+/*
+
+	Q3.
+
+*/ 
+
+// findByPolicyIff
+def findByPolicyIff[A,B](l:List[A])(policy:(A) => Option[B]):Option[List[B]] = None
+
+// getFirstFibSeqSTLenGeN
+def getFirstFibSeqSTLenGeN(l:List[Int])(n:Int):Option[List[Int]] = None
+
+
+
+
+
+
+
+
+
+def carl() = {
+	def xTest[A](test:()=>(A,()=>A)):Boolean = {
+		val (e,lF) = test()
+		try { e == lF() }
+		catch { case _:Throwable => false }
+	}
+	def hTs[A](l:List[()=>(A,()=>A)]):(Int,Int) = {
+		l.foldLeft((0,0)){ 
+			case((c,total),test) => if (xTest(test)) {(c+1,total+1)} else{(c,total+1)}
+		}
+	}
+	def foo(x:(Int,Int),y:(Int,Int)):(Int,Int) = {
+		(x._1+y._1, x._2+y._2)
+	}
+
+	def testBTLLfoldLeft(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (1,()=>{BTLLfoldLeft(Empty:BinT[Int])(1){_*_}})
+		foo(x,hTs(List(t0)))
+	}
+
+	def testBTLLmap(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (Empty,()=>{BTLLmap(Empty:BinT[Int]){_+1}})
+		// oTODO
+		foo(x,hTs(List(t0)))
+	}
+
+	def testSumBinnedTree(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (0,() => sumBinnedTree(Empty))
+		foo(x,hTs(List(t0)))
+	}
+
+	def testIsBinnedSearchTree(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (true,() => isBinnedSearchTree(Empty))
+		foo(x,hTs(List(t0)))
+	}
+
+	def testGetByPolicy(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (Nil,() => getByPolicy(Nil){r:Int=>true})
+		foo(x,hTs(List(t0)))
+	}
+
+	def testGetEvens(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (Nil,() => getEvens(Nil))
+		foo(x,hTs(List(t0)))
+	}
+
+	def testGetNonNegs(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (Nil,() => getNonNegs(Nil))
+		foo(x,hTs(List(t0)))
+	}
+
+	def testGetConsonants(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (Nil,() => getConsonants(Nil))
+		foo(x,hTs(List(t0)))
+	}
+
+	def testFindByPolicyIff(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (None,() => findByPolicyIff(Nil){r:Int=>None})
+		foo(x,hTs(List(t0)))
+	}
+
+	def testGetFirstFibSeqSTLenGeN(x:(Int,Int)):(Int,Int) = {
+		val t0 = () => (None,() => getFirstFibSeqSTLenGeN(Nil)(2))
+		foo(x,hTs(List(t0)))
+	}
+
+	val lTests = List(
+		testBTLLfoldLeft(_), testBTLLmap(_), testSumBinnedTree(_), testIsBinnedSearchTree(_),
+		testGetByPolicy(_), testGetEvens(_), testGetNonNegs(_), testGetConsonants(_),
+		testFindByPolicyIff(_), testGetFirstFibSeqSTLenGeN(_)
+		)
+	val (correct,total) = lTests.foldLeft((0,0)){ (acc,h) => h(acc) }
+
+	println(s"${correct}, ${total}")
+
+}  // carl
+carl()
+
+
+

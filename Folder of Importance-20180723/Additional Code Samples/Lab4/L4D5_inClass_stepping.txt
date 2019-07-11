@@ -1,0 +1,125 @@
+(y: name Number, x: const Bool):Number => {
+	(x) ? 
+		2 :
+		const yp = y; yp + yp
+} ( 
+	2*2*2*2*2,
+	true || false
+   )
+
+--> SearchCall2, DoOrTrue
+
+(y: name Number, x: const Bool):Number => {
+	(x) ? 
+		2 :
+		const yp = y; yp + yp
+} ( 
+	2*2*2*2*2,
+	true
+   )
+
+--> DoCall
+
+(true) ? 
+	2 :
+	const yp = 2*2*2*2*2; yp + yp
+
+--> DoIfTrue
+
+2
+
+
+
+
+
+
+
+(y: name Number, x: const Bool):Number => {
+	(x) ? 
+		2 :
+		const yp = y; yp + yp
+} ( 
+	2*2*2*2*2,
+	false || false
+   )
+
+--> SearchCall2, DoOrFalse
+
+(y: name Number, x: const Bool):Number => {
+	(x) ? 
+		2 :
+		const yp = y; yp + yp
+} ( 
+	2*2*2*2*2,
+	false
+   )
+
+--> DoCal
+
+(false) ? 
+	2 :
+	const yp = 2*2*2*2*2; yp + yp
+
+--> DoIfFalse
+
+const yp = 2*2*2*2*2; yp + yp
+
+-->* dooing mult
+
+const yp = 32; yp + yp
+
+--> DoDecl
+
+32 + 32
+
+--> DoArith(Plus)
+
+64
+
+
+
+
+
+
+
+
+(y: name Number, x: name Bool):Number => {
+	(x) ? 
+		x :
+		const yp = y; yp + yp
+} ( 
+	2*2*2*2*2,
+	true || false
+   )
+
+-->
+
+(true || false) ? 
+	true || false :
+	const yp = 2*2*2*2*2; yp + yp
+
+-->
+
+(true) ? 
+	true || false :
+	const yp = 2*2*2*2*2; yp + yp
+
+
+-->
+
+true || false
+
+-->
+
+true
+
+
+
+
+
+
+
+
+
+
+
